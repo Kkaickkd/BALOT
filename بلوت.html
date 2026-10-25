@@ -3,80 +3,1780 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>بلوت</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&family=Tajawal:wght@500;700&display=swap">
+<meta name="theme-color" content="#0a3628">
+<title>بلوت — جلسات اللعب</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&family=Tajawal:wght@400;500;700&display=swap">
 <style>
 :root{
   --felt:#0f4d3a;--felt-deep:#0a3628;--gold:#c9a24b;--gold-soft:#e3c987;--ivory:#f5efdc;--wine:#7a1f2b;--ink:#1d1a14;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --gold-line:rgba(201,162,75,.42);
+  --gold-faint:rgba(201,162,75,.16);
+  --text-dim:rgba(245,239,220,.72);
+  --text-mute:rgba(245,239,220,.52);
+  --danger:#d97a72;
+  --radius:18px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
-html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:inherit}
 body{
   margin:0;min-height:100%;background:var(--felt-deep);color:var(--ivory);
-  font-family:"Tajawal",system-ui,sans-serif;
-  background-image:radial-gradient(ellipse at 50% 35%,var(--felt) 0%,var(--felt-deep) 75%);
+  font-family:"Tajawal",system-ui,sans-serif;font-size:16px;line-height:1.6;
+  background-image:
+    radial-gradient(ellipse at 50% 28%,var(--felt) 0%,var(--felt-deep) 72%),
+    repeating-linear-gradient(45deg,rgba(255,255,255,.014) 0 2px,transparent 2px 14px);
+  background-attachment:fixed;
+  overflow-x:hidden;
 }
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--felt-deep);z-index:10}
-.screen{min-height:100svh;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;padding:2rem 1.5rem;text-align:center}
+body.no-scroll{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--felt-deep);z-index:30}
+/* زخرفة خفيفة تشبه نسيج جوخ طاولة البلوت */
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:
+    repeating-linear-gradient(-45deg,rgba(0,0,0,.05) 0 2px,transparent 2px 16px),
+    radial-gradient(circle at 50% 42%,rgba(255,255,255,.05),transparent 58%);
+}
+button{font-family:inherit}
+svg{display:block}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ===== الشاشات ===== */
+.screen{
+  position:relative;z-index:1;min-height:100svh;display:none;
+  padding:1.5rem 1.1rem calc(1.75rem + env(safe-area-inset-bottom));
+}
 .screen.on{display:flex}
+.screen--center{align-items:center;justify-content:center;text-align:center}
+.screen--page{align-items:center;justify-content:center}
+
+/* ===== الإطار الرئيسي (هوية الموقع) ===== */
 .frame{
-  width:100%;max-width:340px;padding:2.5rem 1.5rem 2.75rem;
-  border:2px solid var(--gold);border-radius:20px;position:relative;
-  display:flex;flex-direction:column;align-items:center;gap:2.25rem;
+  width:100%;max-width:350px;padding:2.4rem 1.5rem 2.5rem;
+  border:2px solid var(--gold);border-radius:22px;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:1.55rem;
+  background:linear-gradient(180deg,rgba(15,77,58,.55),rgba(10,54,40,.75));
+  box-shadow:0 24px 60px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(2px);
 }
-.frame::before{content:"";position:absolute;inset:7px;border:1px solid rgba(201,162,75,.45);border-radius:14px;pointer-events:none}
+.frame::before{content:"";position:absolute;inset:7px;border:1px solid rgba(201,162,75,.45);border-radius:16px;pointer-events:none}
+.frame::after{
+  content:"";position:absolute;inset-inline:50%;top:-7px;width:52px;height:12px;transform:translateX(50%);
+  background:var(--felt-deep);border-inline:2px solid var(--gold);border-block:2px solid var(--gold);border-radius:6px;pointer-events:none;
+}
 .suits{display:flex;gap:1.1rem;font-size:1.5rem;color:var(--gold-soft);line-height:1;direction:ltr}
 .suits .r{color:#e08a8a}
-h1{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:4.5rem;line-height:1.1;color:var(--ivory);letter-spacing:0}
+h1{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:4.3rem;line-height:1.05;color:var(--ivory)}
+.tagline{margin:0;color:var(--text-dim);font-size:.98rem;max-width:24ch}
+.stack{display:flex;flex-direction:column;gap:.85rem;width:100%}
+.frame .btn{min-height:58px}
+
+/* ===== الأدراج الداخلية ===== */
+.sheet{
+  width:100%;max-width:560px;margin:auto;display:flex;flex-direction:column;gap:1rem;
+  animation:rise .22s ease-out;
+}
+.sheet form{display:flex;flex-direction:column;gap:.9rem}
+.sheet-head{display:flex;align-items:flex-start;gap:.8rem;padding-block:.25rem}
+.sheet-head__titles{flex:1 1 auto;min-width:0}
+.sheet-title{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.65rem;line-height:1.25;color:var(--ivory)}
+.sheet-sub{margin:.15rem 0 0;color:var(--text-mute);font-size:.9rem}
+.sheet-actions{display:flex;align-items:center;gap:.5rem;flex:0 0 auto}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ===== الأزرار ===== */
 .btn{
-  width:100%;min-height:56px;padding:.9rem 1.25rem;
+  width:100%;min-height:56px;padding:.85rem 1.15rem;
   background:var(--ivory);color:var(--ink);border:2px solid var(--gold);border-radius:14px;
-  font-family:"Tajawal",system-ui,sans-serif;font-weight:700;font-size:1.25rem;cursor:pointer;
-  transition:transform .12s ease,background .12s ease;
+  font-family:inherit;font-weight:700;font-size:1.1rem;cursor:pointer;line-height:1.3;
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  transition:transform .12s ease,background .15s ease,border-color .15s ease,opacity .15s ease;
+  -webkit-tap-highlight-color:transparent;
 }
 .btn:hover{background:#fff}
-.btn:active{transform:scale(.98)}
+.btn:active{transform:scale(.985)}
 .btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
-.stack{display:flex;flex-direction:column;gap:1rem;width:100%}
-@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+.btn[disabled]{opacity:.6;cursor:progress;transform:none}
+.btn--gold{
+  background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#241b09;
+  border-color:#eedbab;box-shadow:0 10px 22px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.55);
+}
+.btn--gold:hover{background:linear-gradient(180deg,#f0dda9,var(--gold-soft))}
+.btn--ghost{background:transparent;color:var(--ivory);border-color:var(--gold-line);box-shadow:none}
+.btn--ghost:hover{background:rgba(245,239,220,.08)}
+.btn--soft{background:rgba(245,239,220,.1);color:var(--ivory);border-color:var(--gold-line)}
+.btn--soft:hover{background:rgba(245,239,220,.16)}
+.btn--danger{background:linear-gradient(180deg,#a83b45,var(--wine));color:#fff;border-color:#c9756f}
+.btn--danger:hover{background:linear-gradient(180deg,#b84550,var(--wine))}
+.btn--sm{width:auto;min-height:46px;font-size:.98rem;padding:.55rem .95rem;border-radius:12px}
+.icon-btn{
+  width:46px;height:46px;flex:0 0 auto;display:grid;place-items:center;
+  border-radius:13px;border:1.5px solid var(--gold-line);background:rgba(6,32,24,.45);
+  color:var(--gold-soft);cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .12s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.icon-btn:hover{background:rgba(201,162,75,.16);border-color:var(--gold)}
+.icon-btn:active{transform:scale(.95)}
+.icon-btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.icon-btn--danger{color:#f0b3ac;border-color:rgba(217,122,114,.45)}
+.icon-btn--danger:hover{background:rgba(122,31,43,.5);border-color:var(--danger)}
+
+/* ===== الحقول والبطاقات ===== */
+.card{
+  background:linear-gradient(180deg,rgba(15,77,58,.55),rgba(8,44,33,.7));
+  border:1.5px solid var(--gold-line);border-radius:var(--radius);
+  padding:1rem;display:flex;flex-direction:column;gap:.65rem;position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.field-label{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-weight:700;font-size:.98rem;color:var(--ivory)}
+.field-counter{font-size:.78rem;color:var(--text-mute);font-weight:500}
+.input{
+  width:100%;min-height:54px;padding:.8rem .95rem;font-family:inherit;font-size:16px;line-height:1.4;
+  color:var(--ivory);background:rgba(5,29,22,.6);border:1.5px solid var(--gold-line);border-radius:13px;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.input::placeholder{color:rgba(245,239,220,.42);font-size:.95rem}
+.input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,75,.16);background:rgba(5,29,22,.85)}
+.input[aria-invalid="true"]{border-color:var(--danger);box-shadow:0 0 0 4px rgba(217,122,114,.14)}
+.field-hint{margin:0;font-size:.82rem;color:var(--text-mute)}
+.field-error{margin:0;font-size:.86rem;font-weight:700;color:#ffb9b1;display:flex;gap:.35rem;align-items:flex-start}
+.field-error::before{content:"!";display:grid;place-items:center;width:17px;height:17px;flex:0 0 auto;margin-top:.2rem;border-radius:50%;background:rgba(217,122,114,.25);font-size:.72rem;line-height:1}
+[hidden]{display:none !important}
+
+/* ===== خيار القفل ===== */
+.lock-row{display:flex;align-items:center;gap:.8rem}
+.lock-icon{
+  width:46px;height:46px;flex:0 0 auto;border-radius:13px;display:grid;place-items:center;
+  border:1.5px solid var(--gold-line);background:rgba(201,162,75,.1);color:var(--gold-soft);
+  transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.lock-copy{flex:1 1 auto;min-width:0}
+.lock-title{margin:0;font-weight:700;font-size:1rem;line-height:1.35}
+.lock-desc{margin:.1rem 0 0;font-size:.8rem;color:var(--text-mute);line-height:1.45}
+.card--lock.is-locked{border-color:rgba(201,162,75,.7);background:linear-gradient(180deg,rgba(201,162,75,.14),rgba(8,44,33,.75))}
+.card--lock.is-locked .lock-icon{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#241b09;border-color:#eedbab;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.switch{position:relative;width:58px;height:34px;flex:0 0 auto;display:block}
+.switch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:2}
+.switch__track{
+  position:absolute;inset:0;border-radius:999px;background:rgba(3,20,15,.6);
+  border:1.5px solid var(--gold-line);transition:background .18s ease,border-color .18s ease;
+}
+.switch__track::after{
+  content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;
+  background:var(--text-dim);transition:transform .18s ease,background .18s ease;
+}
+.switch input:checked + .switch__track{background:linear-gradient(180deg,var(--gold-soft),var(--gold));border-color:#eedbab}
+.switch input:checked + .switch__track::after{transform:translateX(-24px);background:#fffdf5}
+.switch input:focus-visible + .switch__track{outline:3px solid var(--gold-soft);outline-offset:3px}
+.password-area{display:flex;flex-direction:column;gap:.5rem;animation:fadeIn .18s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ===== سرعة اللعب ===== */
+.section-title{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.2rem;color:var(--gold-soft)}
+.section-hint{margin:-.2rem 0 .2rem;font-size:.82rem;color:var(--text-mute)}
+.speed-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.speed-card{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;
+  min-height:118px;padding:1rem .5rem;cursor:pointer;text-align:center;
+  border:1.5px solid var(--gold-line);border-radius:16px;background:rgba(5,29,22,.45);
+  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .12s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.speed-card:hover{background:rgba(5,29,22,.7)}
+.speed-card:active{transform:scale(.985)}
+.speed-card__input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.speed-card:focus-within{outline:3px solid var(--gold-soft);outline-offset:3px}
+.speed-card__num{font-family:"Reem Kufi","Tajawal",serif;font-size:2.3rem;line-height:1.1;color:var(--gold-soft)}
+.speed-card__unit{font-weight:700;font-size:1rem}
+.speed-card__note{font-size:.76rem;color:var(--text-mute)}
+.speed-card__check{
+  position:absolute;top:8px;inset-inline-start:8px;width:22px;height:22px;border-radius:50%;
+  display:none;place-items:center;background:var(--gold);color:#241b09;
+}
+.speed-card__check .icon{width:14px;height:14px;stroke-width:2.6}
+.speed-card.is-selected{
+  border-color:var(--gold);background:linear-gradient(180deg,rgba(201,162,75,.24),rgba(201,162,75,.07));
+  box-shadow:0 0 0 2px rgba(201,162,75,.3),0 10px 22px rgba(0,0,0,.22);
+}
+.speed-card.is-selected .speed-card__num{color:#f6e6bb}
+.speed-card.is-selected .speed-card__check{display:grid}
+
+.form-error{
+  margin:0;padding:.75rem .9rem;border-radius:12px;font-size:.9rem;font-weight:700;
+  background:rgba(122,31,43,.4);border:1px solid rgba(217,122,114,.55);color:#ffd7d2;
+}
+.footnote{margin:.15rem 0 0;font-size:.76rem;line-height:1.6;color:var(--text-mute);text-align:center}
+.form-actions{display:flex;flex-direction:column;gap:.6rem;margin-top:.25rem}
+
+/* ===== قائمة الجلسات ===== */
+.cards{display:flex;flex-direction:column;gap:.85rem}
+.session-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(15,77,58,.6),rgba(8,44,33,.82));
+  border:1.5px solid var(--gold-line);border-radius:var(--radius);
+  padding:1rem;display:flex;flex-direction:column;gap:.7rem;
+  box-shadow:0 10px 26px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.04);
+  animation:rise .2s ease-out;
+}
+.session-card::after{
+  content:"♠";position:absolute;inset-inline-end:-6px;bottom:-24px;font-size:5.5rem;line-height:1;
+  color:rgba(201,162,75,.08);pointer-events:none;
+}
+.session-card__top{display:flex;align-items:flex-start;gap:.6rem;justify-content:space-between}
+.session-card__name{
+  margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.2rem;line-height:1.35;
+  overflow-wrap:anywhere;min-width:0;
+}
+.badges{display:flex;flex-wrap:wrap;gap:.4rem;list-style:none;margin:0;padding:0;position:relative;z-index:1}
+.badge{
+  display:inline-flex;align-items:center;gap:.3rem;padding:.24rem .6rem;border-radius:999px;
+  font-size:.78rem;font-weight:700;line-height:1.6;border:1px solid transparent;white-space:nowrap;
+}
+.badge .icon{width:13px;height:13px;stroke-width:2}
+.badge--open{background:rgba(127,200,160,.14);color:#9fe3bd;border-color:rgba(127,200,160,.35)}
+.badge--locked{background:rgba(201,162,75,.16);color:var(--gold-soft);border-color:rgba(201,162,75,.45)}
+.badge--status{background:rgba(245,239,220,.08);color:var(--text-dim);border-color:rgba(245,239,220,.18)}
+.badge--playing{background:rgba(201,162,75,.16);color:#f2dca4;border-color:rgba(201,162,75,.45)}
+.badge__dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+.badge--locked .icon,.badge--open .icon{width:13px;height:13px}
+.session-card__meta{display:flex;flex-wrap:wrap;gap:.45rem .9rem;margin:0;padding:0;list-style:none;font-size:.84rem;color:var(--text-dim)}
+.session-card__meta li{display:flex;align-items:center;gap:.3rem;white-space:nowrap}
+.session-card__meta .icon{width:15px;height:15px;color:var(--gold-soft);opacity:.85}
+.session-card__actions{display:flex;align-items:center;gap:.55rem;margin-top:.15rem;position:relative;z-index:1}
+.session-card__actions .btn{flex:1 1 auto}
+.session-card__owner{font-size:.72rem;color:var(--text-mute);display:flex;gap:.3rem;align-items:center}
+.session-card__owner .icon{width:13px;height:13px}
+
+/* ===== الحالة الفارغة ===== */
+.empty{
+  display:flex;flex-direction:column;align-items:center;gap:.7rem;text-align:center;
+  padding:2.2rem 1.1rem 2rem;border:1.5px dashed var(--gold-line);border-radius:22px;
+  background:linear-gradient(180deg,rgba(15,77,58,.35),rgba(8,44,33,.55));
+}
+.empty__art{
+  width:104px;height:104px;border-radius:50%;display:grid;place-items:center;position:relative;
+  border:1.5px solid var(--gold-line);background:radial-gradient(circle,rgba(201,162,75,.16),transparent 70%);
+  font-size:1.6rem;color:var(--gold-soft);direction:ltr;letter-spacing:.1em;
+}
+.empty__art span{position:absolute;font-size:1.5rem}
+.empty__art span:nth-child(1){top:12px;right:18px}
+.empty__art span:nth-child(2){top:12px;left:18px;color:#e08a8a}
+.empty__art span:nth-child(3){bottom:12px;right:18px;color:#e08a8a}
+.empty__art span:nth-child(4){bottom:12px;left:18px}
+.empty__art strong{font-family:"Reem Kufi","Tajawal",serif;font-size:1.5rem;color:var(--gold-soft);opacity:.5}
+.empty h3{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.25rem}
+.empty p{margin:0;font-size:.88rem;color:var(--text-mute);max-width:32ch;line-height:1.65}
+.empty .btn{max-width:260px;margin-top:.4rem}
+.notice{
+  margin:0;padding:.7rem .85rem;border-radius:12px;font-size:.8rem;line-height:1.6;
+  background:rgba(122,31,43,.28);border:1px solid rgba(217,122,114,.4);color:#ffd7d2;
+}
+.local-note{display:flex;gap:.4rem;align-items:center;justify-content:center;margin:.2rem 0 0;font-size:.76rem;color:var(--text-mute);text-align:center}
+.local-note .icon{width:14px;height:14px;flex:0 0 auto}
+
+/* ===== غرفة الجلسة ===== */
+.room-head{display:flex;flex-direction:column;gap:.55rem}
+.room-title{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.6rem;line-height:1.3;overflow-wrap:anywhere}
+.table-felt{
+  position:relative;border:1.5px solid var(--gold);border-radius:22px;padding:1.1rem .9rem;
+  background:
+    radial-gradient(ellipse at 50% 50%,#14614a 0%,#0b3f2f 72%),
+    repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0 2px,transparent 2px 12px);
+  box-shadow:inset 0 0 0 6px rgba(5,29,22,.35),0 18px 40px rgba(0,0,0,.3);
+  display:flex;flex-direction:column;align-items:center;gap:.85rem;overflow:hidden;
+}
+.table-felt::before{content:"";position:absolute;inset:9px;border:1px solid rgba(201,162,75,.32);border-radius:16px;pointer-events:none}
+.seat{
+  display:flex;align-items:center;gap:.55rem;padding:.45rem .8rem;border-radius:999px;
+  border:1.5px solid rgba(201,162,75,.3);background:rgba(5,29,22,.5);
+  font-weight:700;font-size:.92rem;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.seat__avatar{font-size:1.05rem;line-height:1}
+.seat.is-active{border-color:var(--gold);background:rgba(201,162,75,.18);box-shadow:0 0 0 2px rgba(201,162,75,.28),0 0 22px rgba(201,162,75,.18)}
+.seat__turn{font-size:.7rem;font-weight:700;color:#241b09;background:var(--gold-soft);border-radius:999px;padding:.05rem .45rem;display:none}
+.seat.is-active .seat__turn{display:inline-block}
+.table-center{display:flex;flex-direction:column;align-items:center;gap:.5rem;width:100%}
+.timer{display:flex;flex-direction:column;align-items:center;gap:.1rem;width:100%;max-width:260px}
+.timer__turn{margin:0;font-size:.86rem;font-weight:700;color:var(--gold-soft);letter-spacing:.01em}
+.timer__value{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-size:3.4rem;line-height:1.05;color:var(--ivory);font-variant-numeric:tabular-nums}
+.timer__unit{margin:0;font-size:.78rem;color:var(--text-mute)}
+.timer__bar{width:100%;height:8px;border-radius:999px;background:rgba(0,0,0,.35);overflow:hidden;border:1px solid rgba(201,162,75,.25);margin-top:.35rem}
+.timer__bar span{display:block;height:100%;width:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-soft));transition:width .12s linear,background .2s ease}
+.timer.is-urgent .timer__bar span{background:linear-gradient(90deg,#c4574f,#e08a8a)}
+.timer.is-urgent .timer__value{color:#ffc7c1}
+.timer.is-bot .timer__value{color:var(--gold-soft);opacity:.85}
+.timer.is-bot .timer__bar span{background:linear-gradient(90deg,rgba(201,162,75,.6),rgba(227,201,135,.8))}
+.suits-mini{color:rgba(245,239,220,.5);font-size:1.05rem;direction:ltr;letter-spacing:.16em;display:flex;gap:.5rem}
+.suits-mini .r{color:#d98b8b}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem;max-height:132px;overflow:auto}
+.log__item{
+  display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;color:var(--text-dim);
+  padding:.45rem .6rem;border-radius:10px;background:rgba(5,29,22,.4);border:1px solid rgba(201,162,75,.14);
+  animation:fadeIn .2s ease-out;
+}
+.log__dot{width:6px;height:6px;border-radius:50%;background:var(--gold-soft);margin-top:.45rem;flex:0 0 auto}
+.log__item.is-alert .log__dot{background:#e08a8a}
+.log__empty{font-size:.82rem;color:var(--text-mute);text-align:center;padding:.5rem}
+
+/* ===== النوافذ المنبثقة والتنبيهات ===== */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+  padding:1.1rem;background:rgba(3,18,13,.74);backdrop-filter:blur(5px);
+  overflow-y:auto;
+}
+.modal-panel{
+  width:100%;max-width:400px;margin:auto;
+  background:linear-gradient(180deg,#0d4a38,#093527);
+  border:1.5px solid var(--gold);border-radius:20px;padding:1.4rem 1.2rem;
+  display:flex;flex-direction:column;gap:.7rem;text-align:center;
+  box-shadow:0 28px 70px rgba(0,0,0,.55),inset 0 0 0 5px rgba(5,29,22,.4);
+  animation:pop .18s ease-out;max-height:calc(100svh - 2.2rem);overflow-y:auto;
+}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+.modal-icon{
+  width:52px;height:52px;margin:0 auto;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid var(--gold-line);background:rgba(201,162,75,.12);color:var(--gold-soft);
+}
+.modal-icon .icon{width:24px;height:24px}
+.modal-icon.is-danger{color:#ffcfc9;border-color:rgba(217,122,114,.5);background:rgba(122,31,43,.4)}
+.modal-title{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:1.35rem;line-height:1.35}
+.modal-desc{margin:0;font-size:.88rem;line-height:1.6;color:var(--text-dim)}
+.modal-body{display:flex;flex-direction:column;gap:.55rem;text-align:start;margin-top:.2rem}
+.modal-error{margin:0;font-size:.85rem;font-weight:700;color:#ffb9b1;background:rgba(122,31,43,.35);border:1px solid rgba(217,122,114,.45);border-radius:10px;padding:.5rem .7rem;text-align:start}
+.modal-actions{display:flex;flex-direction:column;gap:.55rem;margin-top:.45rem}
+.modal-actions .btn{min-height:52px}
+
+.toast{position:fixed;inset-inline:0;bottom:calc(1rem + env(safe-area-inset-bottom));z-index:80;display:flex;justify-content:center;padding:0 1rem;pointer-events:none}
+.toast__msg{
+  max-width:100%;display:flex;align-items:center;gap:.45rem;padding:.7rem 1rem;border-radius:999px;
+  background:#0b4030;border:1px solid var(--gold);color:var(--ivory);font-weight:700;font-size:.9rem;
+  box-shadow:0 14px 34px rgba(0,0,0,.45);opacity:0;transform:translateY(16px);
+  transition:opacity .2s ease,transform .2s ease;text-align:center;
+}
+.toast__msg .icon{width:17px;height:17px;flex:0 0 auto;color:var(--gold-soft)}
+.toast.is-visible .toast__msg{opacity:1;transform:none}
+.toast.is-error .toast__msg{border-color:#d97a72;background:#4a1b21}
+.toast.is-error .toast__msg .icon{color:#ffc7c1}
+
+@media (min-width:640px){
+  h1{font-size:5rem}
+  .screen--page{padding-inline:2rem}
+  .sheet{gap:1.1rem}
+  .form-actions{flex-direction:row}
+  .form-actions .btn{flex:1 1 auto}
+  .form-actions .btn--ghost{flex:0 0 32%}
+  .modal-actions{flex-direction:row}
+  .modal-actions .btn{flex:1 1 auto}
+}
+@media (max-height:700px){
+  .frame{gap:1.15rem;padding:1.8rem 1.3rem 2rem}
+  h1{font-size:3.4rem}
+  .screen{padding-block:1.1rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
 </style>
 </head>
 <body>
 
-<main id="home" class="screen on">
+<!-- ============ الرئيسية ============ -->
+<main id="home" class="screen screen--center on">
   <div class="frame">
     <div class="suits" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></div>
     <h1>بلوت</h1>
+    <p class="tagline">طاولة البلوت — أنشئ جلستك، واضبط سرعة اللعب، وابدأ الدور.</p>
     <div class="stack">
       <button class="btn" id="goSessions" type="button">الجلسات</button>
     </div>
   </div>
 </main>
 
-<main id="sessions" class="screen">
+<!-- ============ واجهة الجلسات ============ -->
+<main id="sessions" class="screen screen--center">
   <div class="frame">
     <div class="suits" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></div>
     <h1>بلوت</h1>
+    <p class="tagline">ابدأ جلسة جديدة أو تابع الجلسات المحفوظة على جهازك.</p>
     <div class="stack">
-      <button class="btn" id="createSession" type="button">انشاء جلسة</button>
+      <button class="btn" id="createSession" type="button">إنشاء جلسة</button>
       <button class="btn" id="listSessions" type="button">قائمة الجلسات</button>
+      <button class="btn btn--ghost" id="hubBack" type="button">رجوع</button>
     </div>
   </div>
 </main>
 
+<!-- ============ إنشاء جلسة ============ -->
+<main id="create" class="screen screen--page">
+  <div class="sheet">
+    <header class="sheet-head">
+      <button class="icon-btn" id="createBack" type="button" aria-label="الرجوع إلى واجهة الجلسات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="sheet-head__titles">
+        <h2 class="sheet-title">إنشاء جلسة</h2>
+        <p class="sheet-sub">حدّد اسم الجلسة وخصوصيتها وسرعة اللعب.</p>
+      </div>
+    </header>
+
+    <form id="createForm" novalidate autocomplete="off">
+      <div class="card">
+        <div class="field-label">
+          <label for="sessionName">اسم الجلسة</label>
+          <span class="field-counter" id="nameCount" aria-hidden="true">0 / 40</span>
+        </div>
+        <input class="input" id="sessionName" name="sessionName" type="text" maxlength="40"
+               placeholder="اكتب الاسم الذي تريده، مثل: جلسة العائلة"
+               aria-describedby="nameHelp nameError" enterkeyhint="next">
+        <p class="field-hint" id="nameHelp">هذا الاسم سيظهر في قائمة الجلسات.</p>
+        <p class="field-error" id="nameError" role="alert" hidden></p>
+      </div>
+
+      <div class="card card--lock" id="lockCard">
+        <div class="lock-row">
+          <span class="lock-icon" id="lockIcon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 7.4-2"></path></svg>
+          </span>
+          <div class="lock-copy">
+            <p class="lock-title" id="lockTitle">الجلسة مفتوحة</p>
+            <p class="lock-desc" id="lockDesc">يمكن الدخول إلى الجلسة دون كلمة مرور.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="lockToggle" role="switch" aria-labelledby="lockTitle" aria-describedby="lockDesc">
+            <span class="switch__track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="password-area" id="passwordArea" hidden>
+          <label class="field-label" for="sessionPassword">كلمة مرور الجلسة</label>
+          <input class="input" id="sessionPassword" type="password" maxlength="64"
+                 placeholder="كلمة مرور من ٤ أحرف على الأقل" autocomplete="new-password"
+                 aria-describedby="passwordHelp passwordError">
+          <p class="field-hint" id="passwordHelp">ستُطلب هذه الكلمة عند محاولة الدخول إلى الجلسة.</p>
+          <p class="field-error" id="passwordError" role="alert" hidden></p>
+        </div>
+      </div>
+
+      <section class="card" aria-labelledby="speedTitle">
+        <h3 class="section-title" id="speedTitle">سرعة اللعب</h3>
+        <p class="section-hint">مهلة اللاعب في دوره قبل أن ينتقل الدور إلى البوت.</p>
+        <div class="speed-grid" id="speedGroup" role="radiogroup" aria-labelledby="speedTitle">
+          <label class="speed-card" data-speed-card="5">
+            <input class="speed-card__input" type="radio" name="speed" value="5">
+            <span class="speed-card__check" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>
+            </span>
+            <span class="speed-card__num">5</span>
+            <span class="speed-card__unit">ثوانٍ</span>
+            <span class="speed-card__note">إيقاع سريع</span>
+          </label>
+          <label class="speed-card" data-speed-card="10">
+            <input class="speed-card__input" type="radio" name="speed" value="10">
+            <span class="speed-card__check" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg>
+            </span>
+            <span class="speed-card__num">10</span>
+            <span class="speed-card__unit">ثوانٍ</span>
+            <span class="speed-card__note">إيقاع مرتاح</span>
+          </label>
+        </div>
+      </section>
+
+      <p class="form-error" id="formError" role="alert" hidden></p>
+
+      <div class="form-actions">
+        <button class="btn btn--gold" id="submitCreate" type="submit">إنشاء الجلسة</button>
+        <button class="btn btn--ghost" id="cancelCreate" type="button">إلغاء</button>
+      </div>
+      <p class="footnote">إذا رجعت إلى الجلسات فستبقى بياناتك المدخلة محفوظة، ويمكنك إلغاء المسودة بزر «إلغاء».</p>
+    </form>
+  </div>
+</main>
+
+<!-- ============ قائمة الجلسات ============ -->
+<main id="list" class="screen screen--page">
+  <div class="sheet">
+    <header class="sheet-head">
+      <button class="icon-btn" id="listBack" type="button" aria-label="الرجوع إلى واجهة الجلسات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="sheet-head__titles">
+        <h2 class="sheet-title">قائمة الجلسات</h2>
+        <p class="sheet-sub" id="listCount">&#160;</p>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn btn--sm btn--gold" id="listCreate" type="button">إنشاء</button>
+      </div>
+    </header>
+
+    <p class="notice" id="storageNotice" role="alert" hidden></p>
+    <div class="cards" id="sessionCards"></div>
+    <div class="empty" id="emptyState" hidden>
+      <div class="empty__art" aria-hidden="true">
+        <span>♠</span><span>♥</span><span>♦</span><span>♣</span><strong>42</strong>
+      </div>
+      <h3>لا توجد جلسات بعد</h3>
+      <p>لم تُنشئ أي جلسة حتى الآن. ابدأ أول جلسة، وحدّد اسمها وخصوصيتها وسرعة اللعب.</p>
+      <button class="btn btn--gold" id="emptyCreate" type="button">إنشاء جلسة</button>
+    </div>
+    <p class="local-note">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg>
+      الجلسات محفوظة على هذا الجهاز فقط — ليست لعبًا جماعيًا عبر الإنترنت.
+    </p>
+  </div>
+</main>
+
+<!-- ============ غرفة الجلسة ============ -->
+<main id="sessionRoom" class="screen screen--page">
+  <div class="sheet" id="roomSheet"></div>
+</main>
+
+<!-- ============ نافذة منبثقة عامة ============ -->
+<div class="modal-backdrop" id="modalBackdrop" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><p class="toast__msg" id="toastMsg"></p></div>
+
+<noscript>
+  <div style="position:fixed;inset:0;display:grid;place-items:center;background:#0a3628;color:#f5efdc;text-align:center;padding:2rem;z-index:99">
+    يحتاج موقع بلوت إلى تفعيل JavaScript لإنشاء الجلسات وعرضها.
+  </div>
+</noscript>
+
 <script>
-(function(){
-  var home=document.getElementById("home"),sessions=document.getElementById("sessions");
-  function show(){
-    var h=location.hash==="#sessions";
-    sessions.classList.toggle("on",h);
-    home.classList.toggle("on",!h);
-    window.scrollTo(0,0);
+'use strict';
+(function () {
+  /* =========================================================
+     أدوات مساعدة
+  ========================================================= */
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+  const Icons = {
+    lock: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+    unlock: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.4-2"/></svg>',
+    clock: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>',
+    users: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3 3 0 0 1 0 5.5"/><path d="M17.5 14.2A5.5 5.5 0 0 1 20.5 19"/></svg>',
+    trash: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5M14 11v5"/></svg>',
+    check: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>',
+    alert: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l8 15H4z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>',
+    crown: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 3 4-6 4 6 4-3v9H4z"/><path d="M4 20h16"/></svg>',
+    device: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg>',
+    card: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8l2 3-2 3-2-3z"/></svg>',
+    close: '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  };
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-  document.getElementById("goSessions").addEventListener("click",function(){location.hash="sessions"});
-  window.addEventListener("hashchange",show);
-  show();
+
+  function randomHex(bytes) {
+    const arr = new Uint8Array(bytes);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(arr);
+    } else {
+      for (let i = 0; i < bytes; i++) arr[i] = Math.floor(Math.random() * 256);
+    }
+    return Array.prototype.map.call(arr, b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function formatDate(ts) {
+    try {
+      return new Intl.DateTimeFormat('ar', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', calendar: 'gregory'
+      }).format(new Date(ts));
+    } catch (e) {
+      return new Date(ts).toLocaleString();
+    }
+  }
+
+  function countLabel(n) {
+    if (n === 0) return 'لا توجد جلسات محفوظة';
+    if (n === 1) return 'جلسة واحدة محفوظة';
+    if (n === 2) return 'جلستان محفوظتان';
+    if (n <= 10) return n + ' جلسات محفوظة';
+    return n + ' جلسة محفوظة';
+  }
+
+  /* =========================================================
+     هوية الجهاز (لمنع إدارة جلسات لا يملكها المستخدم)
+  ========================================================= */
+  const Device = (function () {
+    const KEY = 'baloot.device.v1';
+    let memoryId = null;
+    function read() {
+      try {
+        const stored = localStorage.getItem(KEY);
+        if (stored) return stored;
+      } catch (e) { /* التخزين غير متاح */ }
+      if (memoryId) return memoryId;
+      memoryId = 'dev_' + randomHex(8);
+      try { localStorage.setItem(KEY, memoryId); } catch (e) { /* تجاهل */ }
+      return memoryId;
+    }
+    return { id: read };
+  })();
+
+  /* =========================================================
+     تشفير/تحقق كلمة المرور (ليس أمنًا قويًا، لكن لا تُحفظ كنص صريح)
+  ========================================================= */
+  function hasSubtleCrypto() {
+    try {
+      return !!(window.crypto && window.crypto.subtle && window.crypto.subtle.digest && window.TextEncoder);
+    } catch (e) { return false; }
+  }
+
+  async function hashPassword(password, salt, algo) {
+    const payload = salt + '|' + password;
+    if (algo === 'sha256' && hasSubtleCrypto()) {
+      const data = new TextEncoder().encode(payload);
+      const buffer = await window.crypto.subtle.digest('SHA-256', data);
+      return Array.prototype.map.call(new Uint8Array(buffer), b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // بديل بسيط يعمل في كل المتصفحات (حتى دون سياق آمن)
+    let h = 0x811c9dc5;
+    for (let i = 0; i < payload.length; i++) {
+      h ^= payload.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return 'fnv' + h.toString(16);
+  }
+
+  async function makePasswordRecord(password) {
+    const algo = hasSubtleCrypto() ? 'sha256' : 'fnv';
+    const salt = randomHex(8);
+    return { algo: algo, salt: salt, hash: await hashPassword(password, salt, algo) };
+  }
+
+  async function verifyPasswordRecord(password, record) {
+    if (!record || !record.salt) return false;
+    const hash = await hashPassword(password, record.salt, record.algo);
+    return hash === record.hash;
+  }
+
+  /* =========================================================
+     تخزين الجلسات (localStorage + بديل في الذاكرة)
+  ========================================================= */
+  const Store = (function () {
+    const KEY = 'baloot.sessions.v1';
+    let memory = [];
+    let persistent = true;
+
+    try {
+      const probe = '__baloot_probe__';
+      localStorage.setItem(probe, '1');
+      localStorage.removeItem(probe);
+    } catch (e) {
+      persistent = false;
+    }
+
+    function normalize(item) {
+      if (!item || typeof item !== 'object') return null;
+      if (typeof item.id !== 'string' || !item.id) return null;
+      if (typeof item.name !== 'string' || !item.name.trim()) return null;
+      return {
+        id: item.id,
+        name: item.name,
+        locked: !!item.locked,
+        pass: item.pass && typeof item.pass === 'object' ? item.pass : null,
+        speed: item.speed === 5 ? 5 : 10,
+        status: item.status === 'playing' ? 'playing' : 'available',
+        ownerId: typeof item.ownerId === 'string' ? item.ownerId : '',
+        createdAt: Number(item.createdAt) || Date.now(),
+        updatedAt: Number(item.updatedAt) || Number(item.createdAt) || Date.now()
+      };
+    }
+
+    function read() {
+      if (!persistent) return memory.slice();
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(normalize).filter(Boolean);
+      } catch (e) {
+        console.warn('تعذّر قراءة الجلسات المحفوظة:', e);
+        return [];
+      }
+    }
+
+    function write(list) {
+      const clean = list.map(normalize).filter(Boolean);
+      if (persistent) {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(clean));
+        } catch (e) {
+          throw new Error('تعذّر حفظ الجلسة على هذا المتصفح. تحقّق من المساحة المتاحة، أو اسمح بالتخزين المحلي.');
+        }
+      }
+      memory = clean.slice();
+    }
+
+    function newId(list) {
+      let id;
+      do {
+        id = 'blt_' + Date.now().toString(36) + '_' + randomHex(4);
+      } while (list.some(s => s.id === id));
+      return id;
+    }
+
+    return {
+      isPersistent: function () { return persistent; },
+
+      list: function () {
+        return read().sort(function (a, b) { return b.createdAt - a.createdAt; });
+      },
+
+      get: function (id) {
+        return read().filter(function (s) { return s.id === id; })[0] || null;
+      },
+
+      isOwner: function (session) {
+        return !!session && session.ownerId === Device.id();
+      },
+
+      create: async function (options) {
+        const list = read();
+        const now = Date.now();
+        const pass = options.locked ? await makePasswordRecord(options.password) : null;
+        const session = normalize({
+          id: newId(list),
+          name: options.name,
+          locked: !!options.locked,
+          pass: pass,
+          speed: options.speed === 5 ? 5 : 10,
+          status: 'available',
+          ownerId: Device.id(),
+          createdAt: now,
+          updatedAt: now
+        });
+        list.push(session);
+        write(list);
+        return session;
+      },
+
+      verify: async function (id, password) {
+        const session = this.get(id);
+        if (!session || !session.locked) return false;
+        return verifyPasswordRecord(password, session.pass);
+      },
+
+      setStatus: function (id, status) {
+        const list = read();
+        const session = list.filter(function (s) { return s.id === id; })[0];
+        if (!session) return null;
+        if (session.status === status) return session;
+        session.status = status === 'playing' ? 'playing' : 'available';
+        session.updatedAt = Date.now();
+        write(list);
+        return session;
+      },
+
+      remove: function (id) {
+        const list = read();
+        const session = list.filter(function (s) { return s.id === id; })[0] || null;
+        if (!session) return false;
+        if (session.ownerId && session.ownerId !== Device.id()) return false;
+        write(list.filter(function (s) { return s.id !== id; }));
+        return true;
+      }
+    };
+  })();
+
+  /* مسودة إنشاء الجلسة (الاسم + القفل + السرعة، دون كلمة المرور) */
+  const Draft = (function () {
+    const KEY = 'baloot.draft.v1';
+    let memory = null;
+    function read() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') return parsed;
+        }
+      } catch (e) { /* تجاهل */ }
+      return memory;
+    }
+    return {
+      read: read,
+      save: function (state) {
+        memory = state;
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* تجاهل */ }
+      },
+      clear: function () {
+        memory = null;
+        try { localStorage.removeItem(KEY); } catch (e) { /* تجاهل */ }
+      }
+    };
+  })();
+
+  /* =========================================================
+     التنبيهات والنوافذ
+  ========================================================= */
+  const UI = (function () {
+    let toastTimer = null;
+    let lastFocus = null;
+
+    function toast(message, type) {
+      const host = $('#toast');
+      const msg = $('#toastMsg');
+      msg.textContent = message;
+      msg.insertAdjacentHTML('afterbegin', type === 'error' ? Icons.alert : Icons.check);
+      host.classList.toggle('is-error', type === 'error');
+      host.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { host.classList.remove('is-visible'); }, 3200);
+    }
+
+    function dialog(config) {
+      return new Promise(function (resolve) {
+        const backdrop = $('#modalBackdrop');
+        lastFocus = document.activeElement;
+
+        backdrop.innerHTML =
+          '<div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">' +
+            '<div class="modal-icon' + (config.danger ? ' is-danger' : '') + '">' + (config.icon || Icons.lock) + '</div>' +
+            '<h2 class="modal-title" id="modalTitle"></h2>' +
+            '<p class="modal-desc" id="modalDesc"></p>' +
+            '<div class="modal-body">' + (config.body || '') + '</div>' +
+            '<p class="modal-error" hidden></p>' +
+            '<div class="modal-actions">' +
+              '<button class="btn ' + (config.danger ? 'btn--danger' : 'btn--gold') + '" type="button" data-ok></button>' +
+              '<button class="btn btn--ghost" type="button" data-cancel></button>' +
+            '</div>' +
+          '</div>';
+
+        const panel = $('.modal-panel', backdrop);
+        const errEl = $('.modal-error', panel);
+        const okBtn = $('[data-ok]', panel);
+        const cancelBtn = $('[data-cancel]', panel);
+        const bodyEl = $('.modal-body', panel);
+
+        $('.modal-title', panel).textContent = config.title || '';
+        $('.modal-desc', panel).textContent = config.description || '';
+        okBtn.textContent = config.confirm || 'تأكيد';
+        cancelBtn.textContent = config.cancel || 'إلغاء';
+        if (!config.description) $('#modalDesc', panel).hidden = true;
+        if (!config.body) bodyEl.hidden = true;
+
+        backdrop.hidden = false;
+        document.body.classList.add('no-scroll');
+
+        function onKey(e) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            close('cancel');
+            return;
+          }
+          if (e.key === 'Tab') {
+            const focusables = $$('button, input, textarea, select, [href]', panel)
+              .filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+            if (!focusables.length) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          }
+        }
+
+        function close(result) {
+          document.removeEventListener('keydown', onKey, true);
+          backdrop.hidden = true;
+          backdrop.innerHTML = '';
+          document.body.classList.remove('no-scroll');
+          if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) { /* تجاهل */ } }
+          resolve(result);
+        }
+
+        function showError(text) {
+          errEl.textContent = text;
+          errEl.hidden = !text;
+        }
+
+        okBtn.addEventListener('click', async function () {
+          showError('');
+          if (typeof config.validate === 'function') {
+            okBtn.disabled = true;
+            let result = true;
+            try {
+              result = await config.validate(bodyEl);
+            } catch (e) {
+              result = 'تعذّر إتمام العملية، حاول مرة أخرى.';
+            }
+            okBtn.disabled = false;
+            if (result !== true) {
+              showError(typeof result === 'string' ? result : 'قيمة غير صحيحة.');
+              const input = $('input', bodyEl);
+              if (input) input.focus();
+              return;
+            }
+          }
+          close('confirm');
+        });
+
+        cancelBtn.addEventListener('click', function () { close('cancel'); });
+        backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close('cancel'); });
+        document.addEventListener('keydown', onKey, true);
+
+        const firstInput = $('input, textarea', bodyEl);
+        setTimeout(function () { (firstInput || okBtn).focus(); }, 40);
+      });
+    }
+
+    function promptPassword(session) {
+      return dialog({
+        icon: Icons.lock,
+        title: 'الجلسة مقفلة',
+        description: 'أدخل كلمة مرور الجلسة «' + session.name + '» للمتابعة.',
+        confirm: 'دخول الجلسة',
+        cancel: 'إلغاء',
+        body:
+          '<label class="sr-only" for="modalPassword">كلمة مرور الجلسة</label>' +
+          '<input class="input" id="modalPassword" type="password" maxlength="64" ' +
+          'placeholder="كلمة المرور" autocomplete="current-password" enterkeyhint="go">',
+        validate: async function (bodyEl) {
+          const input = $('#modalPassword', bodyEl);
+          const value = input ? input.value : '';
+          if (!value.trim()) return 'يرجى إدخال كلمة المرور.';
+          const ok = await Store.verify(session.id, value);
+          if (!ok) {
+            if (input) { input.value = ''; }
+            return 'كلمة المرور غير صحيحة، حاول مرة أخرى.';
+          }
+          return true;
+        }
+      }).then(function (result) { return result === 'confirm'; });
+    }
+
+    return { toast: toast, dialog: dialog, promptPassword: promptPassword };
+  })();
+
+  /* بوابة كلمة المرور: تُفتح مرة واحدة لكل جلسة في كل تحميل للصفحة */
+  const Gate = {
+    passed: new Set(),
+    ensure: async function (session) {
+      if (!session || !session.locked) return true;
+      if (this.passed.has(session.id)) return true;
+      const ok = await UI.promptPassword(session);
+      if (ok) this.passed.add(session.id);
+      return ok;
+    }
+  };
+
+  /* =========================================================
+     الطاولة: مؤقت الدور وانتقال التحكم إلى البوت
+  ========================================================= */
+  const TurnClock = (function () {
+    let intervalId = null;
+    let botTimeoutId = null;
+    let deadline = 0;
+    let remaining = 0;
+    let turn = null;
+    let totalMs = 10000;
+    let sessionId = null;
+    let refs = null;
+    let paused = false;
+
+    function clearTimers() {
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      if (botTimeoutId) { clearTimeout(botTimeoutId); botTimeoutId = null; }
+    }
+
+    function paint() {
+      if (!refs) return;
+      const valueEl = refs.value;
+      const barEl = refs.bar;
+      const unitEl = refs.unit;
+      const timerEl = refs.timer;
+      const trackEl = refs.track;
+
+      timerEl.classList.toggle('is-bot', turn === 'bot');
+
+      if (turn === 'bot') {
+        valueEl.textContent = '…';
+        unitEl.hidden = true;
+        barEl.style.width = '100%';
+        timerEl.classList.remove('is-urgent');
+        if (trackEl) trackEl.setAttribute('aria-valuenow', '0');
+        return;
+      }
+
+      unitEl.hidden = false;
+      const secondsLeft = Math.max(0, remaining);
+      const secondsShown = Math.ceil(secondsLeft / 1000);
+      valueEl.textContent = String(secondsShown);
+      barEl.style.width = Math.max(0, Math.min(100, (secondsLeft / totalMs) * 100)) + '%';
+      timerEl.classList.toggle('is-urgent', secondsLeft <= totalMs * 0.35);
+      if (trackEl) trackEl.setAttribute('aria-valuenow', String(secondsShown));
+    }
+
+    function setTurnUI(next) {
+      turn = next;
+      if (!refs) return;
+      refs.playerSeat.classList.toggle('is-active', next === 'player');
+      refs.botSeat.classList.toggle('is-active', next === 'bot');
+      refs.label.textContent = next === 'player' ? 'دورك الآن' : 'دور البوت';
+      paint();
+    }
+
+    function pushLog(text, alert) {
+      if (!refs || !refs.log) return;
+      const li = document.createElement('li');
+      li.className = 'log__item' + (alert ? ' is-alert' : '');
+      li.innerHTML = '<span class="log__dot"></span><span>' + esc(text) + '</span>';
+      refs.log.insertBefore(li, refs.log.firstChild);
+      while (refs.log.children.length > 5) refs.log.removeChild(refs.log.lastChild);
+    }
+
+    function startPlayerTurn(announce) {
+      if (!sessionId) return;
+      clearTimers();
+      paused = false;
+      remaining = totalMs;
+      deadline = performance.now() + remaining;
+      setTurnUI('player');
+      paint();
+      if (announce) pushLog('بدأ دورك — لديك ' + Math.round(totalMs / 1000) + ' ثوانٍ');
+      intervalId = setInterval(tick, 100);
+    }
+
+    function tick() {
+      if (!sessionId || paused) return;
+      remaining = deadline - performance.now();
+      if (remaining <= 0) {
+        timeoutHandler();
+        return;
+      }
+      paint();
+    }
+
+    function timeoutHandler() {
+      clearTimers();
+      remaining = 0;
+      paint();
+      pushLog('انتهت مهلتك — انتقل الدور إلى البوت', true);
+      setTurnUI('bot');
+      botTimeoutId = setTimeout(function () {
+        botTimeoutId = null;
+        if (!sessionId || turn !== 'bot') return;
+        pushLog('لعب البوت دوره — عاد الدور إليك', false);
+        startPlayerTurn(false);
+      }, 1600);
+    }
+
+    return {
+      mount: function (session, elements) {
+        this.stop();
+        sessionId = session.id;
+        totalMs = (session.speed === 5 ? 5 : 10) * 1000;
+        refs = elements;
+        turn = null;
+        startPlayerTurn(true);
+      },
+
+      stop: function () {
+        clearTimers();
+        sessionId = null;
+        refs = null;
+        turn = null;
+        paused = false;
+      },
+
+      pause: function () {
+        if (!sessionId || turn !== 'player' || paused) return;
+        remaining = Math.max(0, deadline - performance.now());
+        paused = true;
+        if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      },
+
+      resume: function () {
+        if (!sessionId || turn !== 'player' || !paused) return;
+        paused = false;
+        deadline = performance.now() + remaining;
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(tick, 100);
+        paint();
+      },
+
+      activeSession: function () { return sessionId; }
+    };
+  })();
+
+  /* =========================================================
+     المسارات
+  ========================================================= */
+  const Router = {
+    go: function (hash) {
+      if (location.hash === hash) {
+        render();
+      } else {
+        location.hash = hash;
+      }
+    },
+    parse: function () {
+      const raw = String(location.hash || '').replace(/^#\/?/, '');
+      if (!raw) return { name: 'home', param: '' };
+      const parts = raw.split('/');
+      const head = parts[0];
+      if (head === 'session' && parts[1]) return { name: 'session', param: decodeURIComponent(parts.slice(1).join('/')) };
+      if (head === 'sessions' || head === 'create' || head === 'list') return { name: head, param: '' };
+      return { name: 'home', param: '' };
+    },
+    current: { name: 'home', param: '' }
+  };
+
+  function showScreen(id) {
+    $$('.screen').forEach(function (el) {
+      el.classList.toggle('on', el.id === id);
+    });
+  }
+
+  /* =========================================================
+     واجهة الإنشاء
+  ========================================================= */
+  const Create = (function () {
+    let form, nameInput, nameError, nameCount, lockToggle, lockCard, lockIcon, lockTitle, lockDesc,
+        passwordArea, passwordInput, passwordError, formError, submitBtn, speedInputs, creating = false;
+
+    function cache() {
+      form = $('#createForm');
+      nameInput = $('#sessionName');
+      nameError = $('#nameError');
+      nameCount = $('#nameCount');
+      lockToggle = $('#lockToggle');
+      lockCard = $('#lockCard');
+      lockIcon = $('#lockIcon');
+      lockTitle = $('#lockTitle');
+      lockDesc = $('#lockDesc');
+      passwordArea = $('#passwordArea');
+      passwordInput = $('#sessionPassword');
+      passwordError = $('#passwordError');
+      formError = $('#formError');
+      submitBtn = $('#submitCreate');
+      speedInputs = $$('input[name="speed"]', form);
+    }
+
+    function currentSpeed() {
+      const checked = form.querySelector('input[name="speed"]:checked');
+      return checked ? Number(checked.value) : 10;
+    }
+
+    function syncSpeedUI() {
+      const value = currentSpeed();
+      $$('.speed-card', form).forEach(function (card) {
+        card.classList.toggle('is-selected', Number(card.getAttribute('data-speed-card')) === value);
+      });
+    }
+
+    function setSpeed(value) {
+      const target = form.querySelector('input[name="speed"][value="' + (value === 5 ? 5 : 10) + '"]');
+      if (target) target.checked = true;
+      syncSpeedUI();
+    }
+
+    function syncLockUI() {
+      const locked = lockToggle.checked;
+      passwordArea.hidden = !locked;
+      lockCard.classList.toggle('is-locked', locked);
+      lockIcon.innerHTML = locked ? Icons.lock : Icons.unlock;
+      lockTitle.textContent = locked ? 'الجلسة مقفلة' : 'الجلسة مفتوحة';
+      lockDesc.textContent = locked
+        ? 'سيُطلب من اللاعب إدخال كلمة المرور قبل الدخول.'
+        : 'يمكن الدخول إلى الجلسة دون كلمة مرور.';
+      if (!locked) {
+        passwordError.hidden = true;
+        passwordInput.setAttribute('aria-invalid', 'false');
+      }
+    }
+
+    function setError(el, message) {
+      if (!el) return;
+      el.textContent = message || '';
+      el.hidden = !message;
+    }
+
+    function markInvalid(input, invalid) {
+      if (!input) return;
+      if (invalid) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+
+    function clearErrors() {
+      setError(nameError, '');
+      setError(passwordError, '');
+      setError(formError, '');
+      markInvalid(nameInput, false);
+      markInvalid(passwordInput, false);
+    }
+
+    function updateCount() {
+      if (nameCount) nameCount.textContent = nameInput.value.length + ' / 40';
+    }
+
+    function saveDraft() {
+      Draft.save({
+        name: nameInput.value,
+        locked: lockToggle.checked,
+        speed: currentSpeed()
+      });
+    }
+
+    function applyDraft() {
+      const draft = Draft.read();
+      if (!draft) return;
+      if (typeof draft.name === 'string') nameInput.value = draft.name.slice(0, 40);
+      lockToggle.checked = !!draft.locked;
+      setSpeed(draft.speed);
+      syncLockUI();
+      updateCount();
+    }
+
+    function reset() {
+      form.reset();
+      nameInput.value = '';
+      passwordInput.value = '';
+      lockToggle.checked = false;
+      setSpeed(10);
+      syncLockUI();
+      updateCount();
+      clearErrors();
+    }
+
+    async function submit(e) {
+      if (e) e.preventDefault();
+      if (creating) return;
+      clearErrors();
+
+      const name = nameInput.value.trim().replace(/\s+/g, ' ');
+      const locked = lockToggle.checked;
+      const password = passwordInput.value;
+      const speed = currentSpeed();
+
+      let firstInvalid = null;
+
+      if (!name) {
+        setError(nameError, 'اكتب اسمًا للجلسة قبل الإنشاء.');
+        markInvalid(nameInput, true);
+        firstInvalid = nameInput;
+      }
+
+      if (locked && password.trim().length < 4) {
+        setError(passwordError, 'كلمة المرور مطلوبة للجلسة المقفلة (٤ أحرف على الأقل).');
+        markInvalid(passwordInput, true);
+        if (!firstInvalid) firstInvalid = passwordInput;
+      }
+
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+
+      creating = true;
+      const originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جارٍ إنشاء الجلسة…';
+
+      try {
+        const session = await Store.create({
+          name: name,
+          locked: locked,
+          password: password,
+          speed: speed
+        });
+
+        Draft.clear();
+        Gate.passed.add(session.id);
+        reset();
+        UI.toast('تم إنشاء الجلسة «' + session.name + '» بنجاح');
+
+        if (Store.isPersistent()) {
+          Router.go('#/session/' + encodeURIComponent(session.id));
+        } else {
+          Router.go('#/list');
+        }
+      } catch (err) {
+        console.error(err);
+        setError(formError, (err && err.message) || 'تعذّر إنشاء الجلسة، حاول مرة أخرى.');
+        formError.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } finally {
+        creating = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
+    }
+
+    function bind() {
+      cache();
+      setSpeed(10);
+      syncLockUI();
+      updateCount();
+
+      nameInput.addEventListener('input', function () {
+        updateCount();
+        setError(nameError, '');
+        markInvalid(nameInput, false);
+        saveDraft();
+      });
+
+      lockToggle.addEventListener('change', function () {
+        syncLockUI();
+        if (lockToggle.checked) {
+          setTimeout(function () { passwordInput.focus(); }, 60);
+        }
+        saveDraft();
+      });
+
+      passwordInput.addEventListener('input', function () {
+        setError(passwordError, '');
+        markInvalid(passwordInput, false);
+      });
+
+      speedInputs.forEach(function (input) {
+        input.addEventListener('change', function () {
+          syncSpeedUI();
+          saveDraft();
+        });
+      });
+
+      form.addEventListener('submit', submit);
+
+      $('#createBack').addEventListener('click', function () {
+        saveDraft();
+        Router.go('#/sessions');
+      });
+
+      $('#cancelCreate').addEventListener('click', async function () {
+        const hasData = nameInput.value.trim() !== '' || lockToggle.checked || passwordInput.value !== '';
+        if (hasData) {
+          const result = await UI.dialog({
+            icon: Icons.alert,
+            title: 'إلغاء إنشاء الجلسة؟',
+            description: 'ستُحذف المسودة وبياناتها المدخلة، ولا يمكن التراجع.',
+            confirm: 'نعم، إلغاء المسودة',
+            cancel: 'متابعة الكتابة',
+            danger: true
+          });
+          if (result !== 'confirm') return;
+        }
+        Draft.clear();
+        reset();
+        Router.go('#/sessions');
+      });
+    }
+
+    return {
+      init: bind,
+      enter: function () {
+        clearErrors();
+        applyDraft();
+        updateCount();
+        syncSpeedUI();
+      },
+      reset: reset
+    };
+  })();
+
+  /* =========================================================
+     واجهة قائمة الجلسات
+  ========================================================= */
+  const SessionList = (function () {
+    let cardsEl, emptyEl, countEl, noticeEl, busy = false;
+
+    function cache() {
+      cardsEl = $('#sessionCards');
+      emptyEl = $('#emptyState');
+      countEl = $('#listCount');
+      noticeEl = $('#storageNotice');
+    }
+
+    function cardHTML(session) {
+      const owned = Store.isOwner(session);
+      const playing = session.status === 'playing';
+      const privacyBadge = session.locked
+        ? '<span class="badge badge--locked">' + Icons.lock + ' مقفلة</span>'
+        : '<span class="badge badge--open">' + Icons.unlock + ' مفتوحة</span>';
+      const statusBadge = playing
+        ? '<span class="badge badge--playing"><span class="badge__dot"></span> قيد اللعب</span>'
+        : '<span class="badge badge--status"><span class="badge__dot"></span> متاحة</span>';
+
+      return '' +
+        '<article class="session-card" data-id="' + esc(session.id) + '">' +
+          '<div class="session-card__top">' +
+            '<h3 class="session-card__name">' + esc(session.name) + '</h3>' +
+            '<div class="badges">' + statusBadge + '</div>' +
+          '</div>' +
+          '<ul class="badges">' +
+            '<li>' + privacyBadge + '</li>' +
+            '<li><span class="badge badge--status">' + Icons.clock + ' ' + session.speed + ' ثوانٍ</span></li>' +
+          '</ul>' +
+          '<ul class="session-card__meta">' +
+            '<li>' + Icons.users + ' لاعب واحد + بوت</li>' +
+            '<li>' + Icons.card + ' أُنشئت: ' + esc(formatDate(session.createdAt)) + '</li>' +
+          '</ul>' +
+          '<div class="session-card__actions">' +
+            '<button class="btn btn--sm' + (playing ? ' btn--gold' : '') + '" type="button" data-action="enter">' +
+              (playing ? 'متابعة الجلسة' : 'دخول الجلسة') +
+            '</button>' +
+            (owned
+              ? '<button class="icon-btn icon-btn--danger" type="button" data-action="delete" ' +
+                'aria-label="حذف الجلسة ' + esc(session.name) + '" title="حذف الجلسة">' + Icons.trash + '</button>'
+              : '') +
+          '</div>' +
+          (owned
+            ? '<p class="session-card__owner">' + Icons.crown + ' أنت منشئ هذه الجلسة</p>'
+            : '<p class="session-card__owner">' + Icons.crown + ' جلسة أنشأها مستخدم آخر</p>') +
+        '</article>';
+    }
+
+    function render() {
+      if (!cardsEl) cache();
+      const sessions = Store.list();
+
+      countEl.textContent = countLabel(sessions.length);
+      noticeEl.hidden = Store.isPersistent();
+      if (!Store.isPersistent()) {
+        noticeEl.textContent = 'تعذّر الحفظ الدائم في هذا المتصفح؛ ستبقى الجلسات أثناء فتح الصفحة فقط.';
+      }
+
+      cardsEl.innerHTML = sessions.map(cardHTML).join('');
+      emptyEl.hidden = sessions.length > 0;
+      cardsEl.hidden = sessions.length === 0;
+    }
+
+    async function enterSession(id) {
+      if (busy) return;
+      const session = Store.get(id);
+      if (!session) {
+        UI.toast('لم تعد هذه الجلسة موجودة.', 'error');
+        render();
+        return;
+      }
+      busy = true;
+      try {
+        const allowed = await Gate.ensure(session);
+        if (!allowed) return;
+        Router.go('#/session/' + encodeURIComponent(id));
+      } finally {
+        busy = false;
+      }
+    }
+
+    async function deleteSession(id) {
+      const session = Store.get(id);
+      if (!session) { render(); return; }
+      if (!Store.isOwner(session)) {
+        UI.toast('لا تملك صلاحية حذف هذه الجلسة.', 'error');
+        return;
+      }
+      const result = await UI.dialog({
+        icon: Icons.trash,
+        danger: true,
+        title: 'حذف الجلسة؟',
+        description: 'سيتم حذف الجلسة «' + session.name + '» نهائيًا من هذا الجهاز، ولا يمكن التراجع.',
+        confirm: 'حذف الجلسة',
+        cancel: 'الاحتفاظ بها'
+      });
+      if (result !== 'confirm') return;
+
+      let removed = false;
+      try {
+        removed = Store.remove(id);
+      } catch (err) {
+        console.error(err);
+        UI.toast('تعذّر حذف الجلسة من التخزين، حاول مرة أخرى.', 'error');
+        return;
+      }
+      Gate.passed.delete(id);
+      if (TurnClock.activeSession() === id) TurnClock.stop();
+      render();
+      UI.toast(removed ? 'تم حذف الجلسة.' : 'تعذّر حذف الجلسة.', removed ? 'success' : 'error');
+    }
+
+    function bind() {
+      cache();
+
+      cardsEl.addEventListener('click', function (e) {
+        const actionBtn = e.target.closest('[data-action]');
+        if (!actionBtn) return;
+        const card = e.target.closest('.session-card');
+        if (!card) return;
+        const id = card.getAttribute('data-id');
+        if (actionBtn.getAttribute('data-action') === 'enter') enterSession(id);
+        if (actionBtn.getAttribute('data-action') === 'delete') deleteSession(id);
+      });
+
+      $('#listBack').addEventListener('click', function () { Router.go('#/sessions'); });
+      $('#listCreate').addEventListener('click', function () { Router.go('#/create'); });
+      $('#emptyCreate').addEventListener('click', function () { Router.go('#/create'); });
+    }
+
+    return {
+      init: bind,
+      render: render,
+      deleteSession: deleteSession
+    };
+  })();
+
+  /* =========================================================
+     غرفة الجلسة
+  ========================================================= */
+  const Room = (function () {
+    let sheet, token = 0;
+
+    function loading() {
+      sheet.innerHTML =
+        '<div class="sheet-head">' +
+          '<button class="icon-btn" type="button" data-room-back aria-label="الرجوع إلى قائمة الجلسات">' +
+            '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
+          '</button>' +
+          '<div class="sheet-head__titles"><h2 class="sheet-title">جارٍ فتح الجلسة…</h2></div>' +
+        '</div>';
+    }
+
+    function render(session) {
+      const owned = Store.isOwner(session);
+      const privacy = session.locked
+        ? '<span class="badge badge--locked">' + Icons.lock + ' مقفلة</span>'
+        : '<span class="badge badge--open">' + Icons.unlock + ' مفتوحة</span>';
+
+      sheet.innerHTML = '' +
+        '<header class="sheet-head">' +
+          '<button class="icon-btn" type="button" data-room-back aria-label="الرجوع إلى قائمة الجلسات">' +
+            '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
+          '</button>' +
+          '<div class="sheet-head__titles">' +
+            '<p class="sheet-sub">طاولة الجلسة</p>' +
+            '<h2 class="sheet-title room-title">' + esc(session.name) + '</h2>' +
+          '</div>' +
+          '<div class="sheet-actions">' +
+            '<button class="icon-btn icon-btn--danger" type="button" data-room-exit aria-label="الخروج من الجلسة" title="الخروج">' + Icons.close + '</button>' +
+          '</div>' +
+        '</header>' +
+
+        '<ul class="badges" aria-label="بيانات الجلسة">' +
+          '<li>' + privacy + '</li>' +
+          '<li><span class="badge badge--status">' + Icons.clock + ' ' + session.speed + ' ثوانٍ للدور</span></li>' +
+          '<li><span class="badge badge--playing"><span class="badge__dot"></span> قيد اللعب</span></li>' +
+        '</ul>' +
+
+        '<div class="table-felt">' +
+          '<div class="seat" id="botSeat">' +
+            '<span class="seat__avatar" aria-hidden="true">🤖</span>' +
+            '<span>البوت</span>' +
+            '<span class="seat__turn">الدور</span>' +
+          '</div>' +
+          '<div class="table-center">' +
+            '<div class="suits-mini" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></div>' +
+            '<div class="timer" id="timerBox">' +
+              '<p class="timer__turn" id="turnLabel">دورك الآن</p>' +
+              '<p class="timer__value" id="timerValue">' + session.speed + '</p>' +
+              '<p class="timer__unit" id="timerUnit">ثانية متبقية</p>' +
+              '<div class="timer__bar" id="timerTrack" role="progressbar" aria-label="الوقت المتبقي للدور" aria-valuemin="0" aria-valuemax="' + session.speed + '" aria-valuenow="' + session.speed + '">' +
+                '<span id="timerBar"></span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="seat" id="playerSeat">' +
+            '<span class="seat__avatar" aria-hidden="true">🙂</span>' +
+            '<span>أنت</span>' +
+            '<span class="seat__turn">الدور</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<ol class="log" id="roomLog" aria-live="polite"></ol>' +
+
+        '<div class="form-actions">' +
+          (owned ? '<button class="btn btn--soft" type="button" data-room-end>إنهاء اللعب</button>' : '') +
+          '<button class="btn btn--ghost" type="button" data-room-leave>العودة إلى القائمة</button>' +
+        '</div>' +
+        '<p class="footnote">' +
+          'المؤقت مرتبط بدورك الحالي، وعند انتهائه ينتقل الدور إلى البوت ثم يعود إليك من جديد. ' +
+          'هذه الطاولة لتجربة الأدوار والمؤقت، وقواعد البلوت الكاملة تحتاج إلى تطوير إضافي.' +
+        '</p>';
+
+      bindRoom(session);
+      startClock(session);
+    }
+
+    function startClock(session) {
+      TurnClock.mount(session, {
+        label: $('#turnLabel'),
+        value: $('#timerValue'),
+        unit: $('#timerUnit'),
+        bar: $('#timerBar'),
+        track: $('#timerTrack'),
+        timer: $('#timerBox'),
+        playerSeat: $('#playerSeat'),
+        botSeat: $('#botSeat'),
+        log: $('#roomLog')
+      });
+    }
+
+    function bindRoom(session) {
+      const back = $('[data-room-back]', sheet);
+      const exit = $('[data-room-exit]', sheet);
+      const leave = $('[data-room-leave]', sheet);
+      const end = $('[data-room-end]', sheet);
+
+      function leaveRoom() {
+        TurnClock.stop();
+        Router.go('#/list');
+      }
+
+      if (back) back.addEventListener('click', leaveRoom);
+      if (exit) exit.addEventListener('click', leaveRoom);
+      if (leave) leave.addEventListener('click', leaveRoom);
+
+      if (end) {
+        end.addEventListener('click', function () {
+          if (!Store.isOwner(session)) {
+            UI.toast('لا تملك صلاحية إنهاء هذه الجلسة.', 'error');
+            return;
+          }
+          TurnClock.stop();
+          let updated = null;
+          try {
+            updated = Store.setStatus(session.id, 'available');
+          } catch (err) {
+            console.error(err);
+            UI.toast('تعذّر تحديث حالة الجلسة.', 'error');
+            return;
+          }
+          if (!updated) {
+            UI.toast('لم تعد هذه الجلسة موجودة.', 'error');
+            Router.go('#/list');
+            return;
+          }
+          UI.toast('تم إنهاء اللعب — الجلسة متاحة الآن.');
+          Router.go('#/list');
+        });
+      }
+    }
+
+    async function enter(id) {
+      if (!sheet) sheet = $('#roomSheet');
+      const myToken = ++token;
+      TurnClock.stop();
+
+      const session = Store.get(id);
+      if (!session) {
+        loading();
+        UI.toast('لم تعد هذه الجلسة موجودة.', 'error');
+        Router.go('#/list');
+        return;
+      }
+
+      loading();
+      const allowed = await Gate.ensure(session);
+      if (myToken !== token) return;
+      if (!allowed) {
+        Router.go('#/list');
+        return;
+      }
+
+      const fresh = Store.get(id);
+      if (!fresh) {
+        UI.toast('تعذّر فتح الجلسة، قد تكون حُذفت.', 'error');
+        Router.go('#/list');
+        return;
+      }
+
+      try {
+        const playing = Store.setStatus(fresh.id, 'playing');
+        if (playing) fresh.status = playing.status;
+      } catch (err) {
+        console.error(err);
+      }
+      render(fresh);
+    }
+
+    return {
+      enter: enter,
+      stopClock: function () { TurnClock.stop(); }
+    };
+  })();
+
+  /* =========================================================
+     التنقل العام
+  ========================================================= */
+  function render() {
+    const route = Router.parse();
+    Router.current = route;
+    TurnClock.stop();
+
+    if (route.name === 'home') {
+      showScreen('home');
+    } else if (route.name === 'sessions') {
+      showScreen('sessions');
+    } else if (route.name === 'create') {
+      showScreen('create');
+      Create.enter();
+    } else if (route.name === 'list') {
+      showScreen('list');
+      SessionList.render();
+    } else if (route.name === 'session') {
+      showScreen('sessionRoom');
+      Room.enter(route.param);
+    } else {
+      showScreen('home');
+    }
+
+    try { window.scrollTo(0, 0); } catch (e) { /* تجاهل */ }
+  }
+
+  /* =========================================================
+     التهيئة
+  ========================================================= */
+  function init() {
+    Create.init();
+    SessionList.init();
+
+    $('#goSessions').addEventListener('click', function () { Router.go('#/sessions'); });
+    $('#createSession').addEventListener('click', function () { Router.go('#/create'); });
+    $('#listSessions').addEventListener('click', function () { Router.go('#/list'); });
+    $('#hubBack').addEventListener('click', function () { Router.go('#/'); });
+
+    window.addEventListener('hashchange', render);
+
+    // مزامنة بين تبويبات المتصفح لنفس الجهاز
+    window.addEventListener('storage', function (e) {
+      if (e.key && e.key.indexOf('baloot.sessions') === 0) {
+        if (Router.current.name === 'list') SessionList.render();
+        if (Router.current.name === 'session') {
+          const current = Store.get(Router.current.param);
+          if (!current) {
+            UI.toast('تم حذف هذه الجلسة من نافذة أخرى.', 'error');
+            Router.go('#/list');
+          }
+        }
+      }
+    });
+
+    // إيقاف المؤقت عند مغادرة التبويب ثم استئنافه
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        TurnClock.pause();
+      } else {
+        TurnClock.resume();
+      }
+    });
+
+    if (!Store.isPersistent()) {
+      setTimeout(function () { UI.toast('التخزين المحلي غير متاح؛ ستُفقد الجلسات بعد إغلاق الصفحة.', 'error'); }, 700);
+    }
+
+    render();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 </body>
