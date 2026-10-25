@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بلوت</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&family=Tajawal:wght@500;700&display=swap">
+<style>
+:root{
+  --felt:#0f4d3a;--felt-deep:#0a3628;--gold:#c9a24b;--gold-soft:#e3c987;--ivory:#f5efdc;--wine:#7a1f2b;--ink:#1d1a14;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;min-height:100%;background:var(--felt-deep);color:var(--ivory);
+  font-family:"Tajawal",system-ui,sans-serif;
+  background-image:radial-gradient(ellipse at 50% 35%,var(--felt) 0%,var(--felt-deep) 75%);
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--felt-deep);z-index:10}
+.screen{min-height:100svh;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;padding:2rem 1.5rem;text-align:center}
+.screen.on{display:flex}
+.frame{
+  width:100%;max-width:340px;padding:2.5rem 1.5rem 2.75rem;
+  border:2px solid var(--gold);border-radius:20px;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:2.25rem;
+}
+.frame::before{content:"";position:absolute;inset:7px;border:1px solid rgba(201,162,75,.45);border-radius:14px;pointer-events:none}
+.suits{display:flex;gap:1.1rem;font-size:1.5rem;color:var(--gold-soft);line-height:1;direction:ltr}
+.suits .r{color:#e08a8a}
+h1{margin:0;font-family:"Reem Kufi","Tajawal",serif;font-weight:600;font-size:4.5rem;line-height:1.1;color:var(--ivory);letter-spacing:0}
+.btn{
+  width:100%;min-height:56px;padding:.9rem 1.25rem;
+  background:var(--ivory);color:var(--ink);border:2px solid var(--gold);border-radius:14px;
+  font-family:"Tajawal",system-ui,sans-serif;font-weight:700;font-size:1.25rem;cursor:pointer;
+  transition:transform .12s ease,background .12s ease;
+}
+.btn:hover{background:#fff}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.stack{display:flex;flex-direction:column;gap:1rem;width:100%}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<main id="home" class="screen on">
+  <div class="frame">
+    <div class="suits" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></div>
+    <h1>بلوت</h1>
+    <div class="stack">
+      <button class="btn" id="goSessions" type="button">الجلسات</button>
+    </div>
+  </div>
+</main>
+
+<main id="sessions" class="screen">
+  <div class="frame">
+    <div class="suits" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></div>
+    <h1>بلوت</h1>
+    <div class="stack">
+      <button class="btn" id="createSession" type="button">انشاء جلسة</button>
+      <button class="btn" id="listSessions" type="button">قائمة الجلسات</button>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var home=document.getElementById("home"),sessions=document.getElementById("sessions");
+  function show(){
+    var h=location.hash==="#sessions";
+    sessions.classList.toggle("on",h);
+    home.classList.toggle("on",!h);
+    window.scrollTo(0,0);
+  }
+  document.getElementById("goSessions").addEventListener("click",function(){location.hash="sessions"});
+  window.addEventListener("hashchange",show);
+  show();
+})();
+</script>
+</body>
+</html>
